@@ -1,0 +1,30 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop" xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--注册UserDao-->
+    <bean id="userDao" class="com.itheima.dao.impl.userdaoImpl"/>
+    <!--注册UpClass-->
+    <bean id="upClass" class="com.itheima.upClass"></bean>
+
+
+    <aop:config>
+        <!--设置切点-->
+        <aop:pointcut id="pointCut01" expression="execution(* com.itheima.dao.impl.userdaoImpl.save(..))"/>
+        <aop:pointcut id="pointCut02" expression="execution(* com.itheima.dao.impl.userdaoImpl.delete(..))"/>
+        <aop:pointcut id="pointCut03" expression="execution(* com.itheima.dao.impl.userdaoImpl.showTime(..))"/>
+        <aop:pointcut id="pointCut04" expression="execution(* com.itheima.dao.impl.userdaoImpl.showExc(..))"/>
+        <!--配置切面-->
+        <aop:aspect ref="upClass">
+            <!--前置通知-->
+            <aop:before method="checkPrivilege" pointcut-ref="pointCut01"></aop:before>
+            <!--后置通知-->
+            <aop:after-returning method="deleteTZ" pointcut-ref="pointCut02" returning="object"></aop:after-returning>
+            <!--环绕通知-->
+            <aop:around method="afterThrowing" pointcut-ref="pointCut03" ></aop:around>
+            <!--异常通知-->
+            <aop:after-throwing method="showExc" pointcut-ref="pointCut04" throwing="e"/>
+        </aop:aspect>
+    </aop:config>
+</beans>
